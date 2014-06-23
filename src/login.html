@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="../bower_components/hello/dist/hello.js"></script>
+    <script src="../bower_components/hello/src/modules/yahoo.js"></script>
+    <title>HelloJS and Yahoo</title>
+  </head>
+
+  <body>
+    <button id='login' onclick="hello.login('yahoo');">Yahoo</button>
+    <div id="result"></div>
+  </body>
+
+  <!--script class="pre">
+  hello.on('auth.login', function(r){
+    // Get Profile
+    hello.api(r.network+':/me', function(p){
+      document.getElementById('login').innerHTML = "<img src='"+ p.thumbnail + "' width=24/>Connected to "+ r.network+" as " + p.name;
+    });
+  });
+
+  hello.init({
+    'yahoo' : 'dj0yJmk9ZEtVbDNpMWJ1SDI4JmQ9WVdrOVIzSjVZWE5sTjJVbWNHbzlNQS0tJnM9Y29uc3VtZXJzZWNyZXQmeD1jZA--'
+  },{
+    oauth_proxy : 'https://auth-server.herokuapp.com/proxy'
+    //redirect_uri:'../redirect.html',
+  });
+  </script-->
+</html>
