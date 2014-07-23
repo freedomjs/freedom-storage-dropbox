@@ -1,5 +1,5 @@
-var FILES = require('freedom/Gruntfile').FILES;
-console.log(FILES);
+var FILES = require('./Gruntfile').FILES;
+
 module.exports = function(config) {
   config.set({
 
@@ -12,10 +12,10 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     // Testing Providers for now
-    files: [],
+    files: FILES.karma.include,
 
     // list of files to exclude
-    exclude: [],
+    exclude: FILES.karma.exclude,
     
     // web server port
     port: 9876,

@@ -18,6 +18,26 @@
  *  - Used to debug unit tests
  **/
 
+var fileInfo = require('freedom/Gruntfile').FILES;
+var FILES = {
+  src: [
+    'src/**/*.js'
+  ],
+  demo: [
+    'demo/**/*.js'
+  ],
+  spec: [
+    'spec/**/*.spec.js'
+  ],
+  karma: {
+    include: [],
+    exclude: []
+  }
+};
+
+FILES.karma.include = FILES.karma.include.concat(FILES.spec);
+console.log(FILES);
+
 module.exports = function (grunt) {
   /**
    * GRUNT CONFIG
@@ -25,10 +45,7 @@ module.exports = function (grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     karma: {
-      options: {
-        configFile: 'karma.conf.js'
-
-      },
+      options: { configFile: 'karma.conf.js' },
       single: { singleRun: true, autoWatch: false },
       watch: { singleRun: false, autoWatch: true },
       phantom: {
@@ -39,15 +56,11 @@ module.exports = function (grunt) {
     },
     jshint: {
       src: {
-        files: { src: ['src/**/*.js'] },
-        options: {
-          jshintrc: true
-        }
+        files: { src: FILES.src },
+        options: { jshintrc: true }
       },
-      demo: ['demo/**/*.js', '!demo/**/third-party/**'],
-      options: {
-        '-W069': true
-      }
+      demo: FILES.demo,
+      options: { '-W069': true }
     },
     clean: [],
     connect: {
@@ -95,3 +108,4 @@ module.exports = function (grunt) {
   grunt.registerTask('default', ['build']);
 };
 
+module.exports.FILES = FILES;

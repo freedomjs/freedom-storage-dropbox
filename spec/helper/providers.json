@@ -1,0 +1,13 @@
+{
+  "name": "Provider Test Helper",
+  "description": "Helper backend for tests involving provider APIs",
+  "app": {
+    "script": "../../node_modules/freedom/spec/helper/providers.js"
+  },
+  "dependencies": {
+    "storage.dropbox": {
+      "url": "../../src/storage.dropbox.json",
+      "api": "storage"
+    }
+  }
+}
