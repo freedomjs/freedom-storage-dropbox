@@ -1,0 +1,13 @@
+{
+  "name": "Tic Tak",
+  "description": "Tic Tak Sample freedom.js application",
+  "app": {
+    "script": "main.js"
+  },
+  "dependencies": {
+    "localstorage": {
+      "url": "../src/storage.dropbox.json",
+      "api": "storage"
+    }
+  }
+}

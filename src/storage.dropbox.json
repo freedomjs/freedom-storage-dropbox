@@ -3,16 +3,16 @@
   "description": "",
   "app": {
     "script": [
+      "https://www.dropbox.com/static/api/dropbox-datastores-1.1-latest.js",
       "storageprovider.js"
     ]
   },
   "provides": [ "storage" ],
   "permissions": [ "core.view" ],
   "views": {
-    "loginpane": [
+    "dropboxlogin": [
       "login.html",
-      "../bower_components/hello/dist/hello.js",
-      "../bower_components/hello/src/modules/yahoo.js"
+      "login.js"
     ]
   }
 }

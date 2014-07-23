@@ -1,0 +1,29 @@
+{
+  "name": "freedom-storage-dropbox",
+  "description": "Dropbox Storage Provider",
+  "version": "0.0.0",
+  "homepage": "http://freedomjs.org",
+  "bugs": {
+    "url": "http://github.com/freedomjs/freedom-storage-dropbox/issues",
+    "email": "freedom@cs.washington.edu"
+  },
+  "contributors": [
+    "Raymond Cheng <ryscheng@cs.washington.edu> (http://raymondcheng.net)",
+    "Will Scott <willscott@gmail.com> (https://wills.co.tt/)"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/freedomjs/freedom-storage-dropbox"
+  },
+  "main": "Gruntfile.js",
+  "devDependencies": {
+    "grunt": "~0.4.3",
+    "grunt-contrib-clean": "~0.5.0",
+    "grunt-contrib-connect": "~0.8.0",
+    "grunt-contrib-jshint": "~0.10.0",
+    "freedom": "~0.5.1"
+  },
+  "scripts": {
+    "test": "grunt test --verbose"
+  }
+}
