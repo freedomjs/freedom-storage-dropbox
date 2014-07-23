@@ -1,17 +1,16 @@
 /**
- * Gruntfile for freedom.js
+ * Gruntfile for freedom-storage-dropbox
  *
  * Here are the common tasks used:
  * build
- *  - Lint and compile freedom.js
+ *  - Lint and compile
  *  - (default Grunt task) 
  *  - This must be run before ANY karma task (because of connect:default)
- *  - Unit tests only run on PhantomJS
  * demo
- *  - Build freedom.js, and start a web server for seeing demos at
+ *  - start a web server for seeing demos at
  *    http://localhost:8000/demo
  * test
- *  - Build freedom.js, and run all unit tests on 
+ *  - Build, and run all unit tests on 
  *    Chrome, Firefox, and PhantomJS
  * debug
  *  - Same as test, except keeps the browsers open 
@@ -25,6 +24,19 @@ module.exports = function (grunt) {
    **/
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
+    karma: {
+      options: {
+        configFile: 'karma.conf.js'
+
+      },
+      single: { singleRun: true, autoWatch: false },
+      watch: { singleRun: false, autoWatch: true },
+      phantom: {
+        browsers: ['PhantomJS'],
+        singleRun: true,
+        autoWatch: false
+      },
+    },
     jshint: {
       src: {
         files: { src: ['src/**/*.js'] },
@@ -37,7 +49,7 @@ module.exports = function (grunt) {
         '-W069': true
       }
     },
-    clean: ['freedom.js', 'freedom.js.map', 'freedom.min.js', 'freedom.min.js.map'],
+    clean: [],
     connect: {
       default: {
         options: {
@@ -61,6 +73,7 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-karma');
   
   // Default tasks.
   grunt.registerTask('build', [
@@ -69,7 +82,7 @@ module.exports = function (grunt) {
   ]);
   grunt.registerTask('test', [
     'build',
-    'karma:single'
+    'karma:phantom'
   ]);
   grunt.registerTask('debug', [
     'build',

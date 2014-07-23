@@ -1,9 +1,9 @@
 /*globals freedom:true */
 /*jslint indent:2, white:true, sloppy:true, browser:true */
-var window = {};
+var global = {};
 
 function DropboxStorageProvider() {
-  window.provider = this;
+  global.provider = this;
   this.store = {};
   this.credentials = null;
   this.client = null;
