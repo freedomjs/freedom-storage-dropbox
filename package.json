@@ -21,7 +21,7 @@
     "grunt-contrib-clean": "~0.5.0",
     "grunt-contrib-connect": "~0.8.0",
     "grunt-contrib-jshint": "~0.10.0",
-    "freedom": "~0.5.1",
+    "freedom": "~0.5.2",
     "karma": "~0.12.17",
     "grunt-karma": "~0.8.3",
     "karma-jasmine": "~0.2.2",

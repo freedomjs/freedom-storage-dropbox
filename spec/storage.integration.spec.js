@@ -1,5 +1,3 @@
-//describe("integration: storage.dropbox.json", STORAGE_INTEGRATION_SPEC.bind(this, "storage.dropbox"));
-
 describe("storage.dropbox.json", function() {
   var freedom;
 
@@ -17,3 +15,4 @@ describe("storage.dropbox.json", function() {
   });
 });
 
+describe("integration: storage.dropbox.json", STORAGE_INTEGRATION_SPEC.bind(this, "/src/storage.dropbox.json"));

@@ -18,7 +18,15 @@
  *  - Used to debug unit tests
  **/
 
-var fileInfo = require('freedom/Gruntfile').FILES;
+var fileInfo = require('freedom');
+var freedomPrefix = require.resolve('freedom').substr(0,
+  require.resolve('freedom').lastIndexOf('freedom') + 8);
+var addPrefix = function(file) {
+  if (file.indexOf('!') !== 0 && file.indexOf('/') !== 0) {
+    return freedomPrefix + file;
+  }
+  return file
+}
 var FILES = {
   src: [
     'src/**/*.js'
@@ -28,15 +36,18 @@ var FILES = {
   ],
   spec: [
     'spec/**/*.spec.js'
-  ],
-  karma: {
-    include: [],
-    exclude: []
-  }
+  ]
 };
 
+FILES.karma = fileInfo.unGlob([].concat(
+  fileInfo.FILES.srcCore,
+  fileInfo.FILES.srcPlatform,
+  fileInfo.FILES.srcJasmineHelper,
+  fileInfo.FILES.srcProviderIntegration
+).map(addPrefix));
 FILES.karma.include = FILES.karma.include.concat(FILES.spec);
 console.log(FILES);
+console.log(freedomPrefix);
 
 module.exports = function (grunt) {
   /**
