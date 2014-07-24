@@ -34,6 +34,10 @@ var FILES = {
   demo: [
     'demo/**/*.js'
   ],
+  specHelper: [
+    'config.js',
+    'spec/helper/**/*.js'
+  ],
   spec: [
     'spec/**/*.spec.js'
   ]
@@ -45,9 +49,11 @@ FILES.karma = fileInfo.unGlob([].concat(
   fileInfo.FILES.srcJasmineHelper,
   fileInfo.FILES.srcProviderIntegration
 ).map(addPrefix));
-FILES.karma.include = FILES.karma.include.concat(FILES.spec);
+FILES.karma.include = FILES.karma.include.concat(
+  FILES.specHelper, 
+  FILES.spec
+);
 console.log(FILES);
-console.log(freedomPrefix);
 
 module.exports = function (grunt) {
   /**
@@ -78,7 +84,8 @@ module.exports = function (grunt) {
       default: {
         options: {
           port: 8000,
-          keepalive: false
+          keepalive: false,
+          base: ["./", "./node_modules/freedom/"]
         }
       },
       demo: {
