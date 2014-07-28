@@ -162,6 +162,9 @@ DropboxStorageProvider.prototype._onCredentials = function(msg) {
   if (msg.cmd && msg.message && msg.cmd == 'auth') {
     // console.log("storage.dropbox._onCredentials: received credentials, opening datastore");
     this.db.initializing = true;
+    this.db.tableName = msg.message.location;
+    delete msg.message.location;
+    this.db.tableName = this.db.tableName.replace(/[.\/-\\]/g, "");
     this.db.credentials = msg.message;
     this.db.client = new Dropbox.Client(this.db.credentials);
     this.db.datastoreManager = this.db.client.getDatastoreManager();
