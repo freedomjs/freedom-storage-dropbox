@@ -35,6 +35,10 @@ Remember to log into Dropbox using the panel on the bottom
 Before contributing any pull requests, please remember to run
 our integration tests by running the following commands
 
+Configure your credentials by creating a `config.js` in
+the top level directory. `config.template.js` shows the required
+fields. Once this is ready, run the tests by:
+
 ```
   grunt test
 ```
