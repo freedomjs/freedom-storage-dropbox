@@ -10,6 +10,7 @@ function DropboxStorageProvider() {
   } else if (typeof freedom.storebuffer !== 'undefined') {
     this.ERRCODE = freedom.storebuffer().ERRCODE;
   }
+  this.queue = [];
 
   this.db = {};
   this.db.credentials = null;
@@ -17,12 +18,16 @@ function DropboxStorageProvider() {
   this.db.datastoreManager = null;
   this.db.datastore = null;
   this.db.table = null;
+  this.db.tableName = "freedom-storage";
+  this.db.initializing = false;
 
   this.view = freedom['core.view']();
   this.view.once('message', this._onCredentials.bind(this));
 
   if (typeof CONFIG !== 'undefined' && CONFIG.hasOwnProperty("credentials")) {
-    console.log("Preloaded credentials");
+    //To prevent conflicts between concurrent Chrome/Firefox tests
+    this.db.tableName = "test"+Math.random();
+    console.log("Integration test: preloaded credentials");
     this._onCredentials({
       cmd: 'auth',
       message: CONFIG.credentials
@@ -39,7 +44,10 @@ function DropboxStorageProvider() {
 DropboxStorageProvider.prototype.keys = function(continuation) {
   //this.store.keys().then(continuation);
   console.log("storage.dropbox.keys: enter");
-  if (this.db.table === null) {
+  if (this.db.initializing) {
+    this._pushQueue("keys", null, null, continuation);
+    return;
+  } else if (this.db.table === null) {
     continuation(undefined, this._createError("OFFLINE"));
     return;
   }
@@ -59,7 +67,10 @@ DropboxStorageProvider.prototype.keys = function(continuation) {
 DropboxStorageProvider.prototype.get = function(key, continuation) {
   //this.store.get(key).then(continuation);
   console.log("storage.dropbox.get: key=" + key);
-  if (this.db.table === null) {
+  if (this.db.initializing) {
+    this._pushQueue("get", key, null, continuation);
+    return;
+  } else if (this.db.table === null) {
     continuation(undefined, this._createError("OFFLINE"));
     return;
   }
@@ -76,7 +87,10 @@ DropboxStorageProvider.prototype.get = function(key, continuation) {
 DropboxStorageProvider.prototype.set = function(key, value, continuation) {
   //this.store.set(key, value).then(continuation);
   console.log("storage.dropbox.set: key=" + key + ", value=" + value);
-  if (this.db.table === null) {
+  if (this.db.initializing) {
+    this._pushQueue("set", key, value, continuation);
+    return;
+  } else if (this.db.table === null) {
     continuation(undefined, this._createError("OFFLINE"));
     return;
   }
@@ -102,7 +116,10 @@ DropboxStorageProvider.prototype.set = function(key, value, continuation) {
 DropboxStorageProvider.prototype.remove = function(key, continuation) {
   //this.store.remove(key).then(continuation);
   console.log("storage.dropbox.remove: key=" + key);
-  if (this.db.table === null) {
+  if (this.db.initializing) {
+    this._pushQueue("remove", key, null, continuation);
+    return;
+  } else if (this.db.table === null) {
     continuation(undefined, this._createError("OFFLINE"));
     return;
   }
@@ -124,7 +141,10 @@ DropboxStorageProvider.prototype.remove = function(key, continuation) {
 DropboxStorageProvider.prototype.clear = function(continuation) {
   //this.store.clear().then(continuation);
   console.log("storage.dropbox.clear: enter");
-  if (this.db.table === null) {
+  if (this.db.initializing) {
+    this._pushQueue("clear", null, null, continuation);
+    return;
+  } else if (this.db.table === null) {
     continuation(undefined, this._createError("OFFLINE"));
     return;
   }
@@ -141,6 +161,7 @@ DropboxStorageProvider.prototype.clear = function(continuation) {
 DropboxStorageProvider.prototype._onCredentials = function(msg) {
   if (msg.cmd && msg.message && msg.cmd == 'auth') {
     console.log("storage.dropbox._onCredentials: received credentials, opening datastore");
+    this.db.initializing = true;
     this.db.credentials = msg.message;
     this.db.client = new Dropbox.Client(this.db.credentials);
     this.db.datastoreManager = this.db.client.getDatastoreManager();
@@ -150,7 +171,9 @@ DropboxStorageProvider.prototype._onCredentials = function(msg) {
       }
       console.log("storage.dropbox._onCredentials: Fetching table");
       this.db.datastore = ds;
-      this.db.table = ds.getTable('freedom-storage');
+      this.db.table = ds.getTable(this.db.tableName);
+      this.db.initializing = false;
+      this._flushQueue();
     }.bind(this));
   } else {
     console.log("Unknown message from view: " + JSON.stringify(msg));
@@ -164,6 +187,40 @@ DropboxStorageProvider.prototype._createError = function(code) {
     message: this.ERRCODE[code]
   };
 };
+
+//Insert call into queue
+DropboxStorageProvider.prototype._pushQueue = function(method, key, value, continuation) {
+   console.log("Pushing onto queue: " + method);
+  this.queue.push({
+    cmd: method,
+    key: key,
+    value: value,
+    cont: continuation
+  });
+};
+
+//Flush commands in queue
+DropboxStorageProvider.prototype._flushQueue = function() {
+  var i, elt;
+  for (i = 0; i < this.queue.length; i += 1) {
+    elt = this.queue[i];
+    if (elt.cmd === "keys") {
+      this.keys(elt.cont);
+    } else if (elt.cmd === "get") {
+      this.get(elt.key, elt.cont);
+    } else if (elt.cmd === "set") {
+      this.set(elt.key, elt.value, elt.cont);
+    } else if (elt.cmd === "remove") {
+      this.remove(elt.key, elt.cont);
+    } else if (elt.cmd === "clear") {
+      this.clear(elt.cont);
+    } else {
+      console.error("Dropbox Storage: unrecognized command " + JSON.stringify(elt));
+    }
+  }
+  this.queue = [];
+};
+
 
 /** REGISTER PROVIDER **/
 if (typeof freedom !== 'undefined') {
