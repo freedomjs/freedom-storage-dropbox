@@ -1,7 +1,7 @@
 {
   "name": "freedom-storage-dropbox",
   "description": "Dropbox Storage Provider",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "homepage": "http://freedomjs.org",
   "bugs": {
     "url": "http://github.com/freedomjs/freedom-storage-dropbox/issues",
@@ -30,7 +30,9 @@
     "karma-phantomjs-launcher": "~0.1.4",
     "karma-story-reporter": "~0.2.2",
     "es6-promise": "~1.0.0",
-    "es5-shim": "~4.0.0"
+    "es5-shim": "~4.0.0",
+    "grunt-bump": "0.0.14",
+    "grunt-npm": "0.0.2"
   },
   "scripts": {
     "test": "grunt test --verbose"
