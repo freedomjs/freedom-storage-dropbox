@@ -5,16 +5,22 @@ var global = {};
 function DropboxStorageProvider() {
   global.provider = this;
   this.records = {};
-  this.credentials = null;
-  this.client = null;
-  this.datastoreManager = null;
-  this.datastore = null;
-  this.table = null;
+  if (typeof freedom.storage !== 'undefined') {
+    this.ERRCODE = freedom.storage().ERRCODE;
+  } else if (typeof freedom.storebuffer !== 'undefined') {
+    this.ERRCODE = freedom.storebuffer().ERRCODE;
+  }
 
-  this.queue = [];
+  this.db = {};
+  this.db.credentials = null;
+  this.db.client = null;
+  this.db.datastoreManager = null;
+  this.db.datastore = null;
+  this.db.table = null;
+
 
   this.view = freedom['core.view']();
-  this.view.once('message', this.onCredentials.bind(this));
+  this.view.once('message', this._onCredentials.bind(this));
   this.view.open('dropboxlogin', { file: 'login.html' }).then(function() {
     this.view.show();
   }.bind(this));
@@ -22,49 +28,118 @@ function DropboxStorageProvider() {
   console.log("Dropbox Storage Provider, running in worker " + self.location.href);
 }
 
-DropboxStorageProvider.prototype.onCredentials = function(msg) {
+DropboxStorageProvider.prototype.keys = function(continuation) {
+  //this.store.keys().then(continuation);
+  if (this.db.table === null) {
+    continuation(undefined, this._createError("OFFLINE"));
+    return;
+  }
+
+  var retValue = [];
+  var records = this.db.table.query();
+  for (var i=0; i<records.length; i++) {
+    retValue.push(records[i].get("key"));
+  }
+  continuation(retValue);
+};
+
+DropboxStorageProvider.prototype.get = function(key, continuation) {
+  //this.store.get(key).then(continuation);
+  if (this.db.table === null) {
+    continuation(undefined, this._createError("OFFLINE"));
+    return;
+  }
+
+  var retValue = null;
+  var record = this.db.table.get(key);
+  if (record !== null) {
+    retValue = record.get("value");
+  }
+  continuation(retValue);
+};
+
+DropboxStorageProvider.prototype.set = function(key, value, continuation) {
+  //this.store.set(key, value).then(continuation);
+  if (this.db.table === null) {
+    continuation(undefined, this._createError("OFFLINE"));
+    return;
+  }
+
+  var retValue = null;
+  this.records[key] = this.db.table.get(key);
+  if (this.records[key] === null) {
+    this.records[key] = this.db.table.getOrInsert(key, {
+      key: key,
+      value: value,
+      timestamp: new Date()
+    });
+  } else {
+    retValue = this.records[key].get("value");
+    this.records[key].set("value", value);
+    this.records[key].set("timestamp", new Date());
+  }
+
+  continuation(retValue);
+};
+
+DropboxStorageProvider.prototype.remove = function(key, continuation) {
+  //this.store.remove(key).then(continuation);
+  if (this.db.table === null) {
+    continuation(undefined, this._createError("OFFLINE"));
+    return;
+  }
+
+  var retValue = null;
+  var record = this.db.table.get(key);
+  if (record !== null) {
+    retValue = record.get("value");
+    record.deleteRecord();
+  }
+  if (this.records.hasOwnProperty(key)) {
+    delete this.records[key];
+  }
+
+  continuation(retValue);
+};
+
+DropboxStorageProvider.prototype.clear = function(continuation) {
+  //this.store.clear().then(continuation);
+  if (this.db.table === null) {
+    continuation(undefined, this._createError("OFFLINE"));
+    return;
+  }
+  this.records = {};
+  var records = this.db.table.query();
+  for (var i=0; i<records.length; i++) {
+    records[i].deleteRecord();
+  }
+  continuation();
+};
+
+/** INTERNAL METHODS **/
+DropboxStorageProvider.prototype._onCredentials = function(msg) {
   if (msg.cmd && msg.message && msg.cmd == 'auth') {
-    this.credentials = msg.message;
-    this.client = new Dropbox.Client(this.credentials);
-    this.datastoreManager = this.client.getDatastoreManager();
-    this.datastoreManager.openDefaultDatastore(function(error, ds) {
+    this.db.credentials = msg.message;
+    this.db.client = new Dropbox.Client(this.db.credentials);
+    this.db.datastoreManager = this.db.client.getDatastoreManager();
+    this.db.datastoreManager.openDefaultDatastore(function(error, ds) {
       if (error) {
         console.error(error);
       }
-      this.datastore = ds;
-      this.table = ds.getTable('freedom-storage');
+      this.db.datastore = ds;
+      this.db.table = ds.getTable('freedom-storage');
     }.bind(this));
   } else {
     console.log("Unknown message from view: " + JSON.stringify(msg));
   }
 };
 
-DropboxStorageProvider.prototype.keys = function(continuation) {
-  //this.store.keys().then(continuation);
-};
-
-DropboxStorageProvider.prototype.get = function(key, continuation) {
-  //this.store.get(key).then(continuation);
-  continuation("myvalue");
-};
-
-DropboxStorageProvider.prototype.set = function(key, value, continuation) {
-  //this.store.set(key, value).then(continuation);
-  this.records[key] = this.table.insert({
-    key: key,
-    value: value,
-    timestamp: new Date()
-  });
-  continuation();
-};
-
-DropboxStorageProvider.prototype.remove = function(key, continuation) {
-  //this.store.remove(key).then(continuation);
-};
-
-DropboxStorageProvider.prototype.clear = function(continuation) {
-  //this.store.clear().then(continuation);
-  continuation();
+DropboxStorageProvider.prototype._createError = function(code) {
+  // console.log("Creating error: " + code);
+  return {
+    errcode: code, 
+    message: this.ERRCODE[code]
+  };
 };
 
 /** REGISTER PROVIDER **/

@@ -15,4 +15,4 @@ describe("storage.dropbox.json", function() {
   });
 });
 
-describe("integration: storage.dropbox.json", STORAGE_INTEGRATION_SPEC.bind(this, "/src/storage.dropbox.json"));
+describe("integration: storage.dropbox.json", STORAGE_INTEGRATION_SPEC.bind(this, "/src/storage.dropbox.json", false));
