@@ -1,0 +1,19 @@
+{
+  "name": "Dropbox Storage Provider",
+  "description": "",
+  "app": {
+    "script": [
+      "https://www.dropbox.com/static/api/dropbox-datastores-1.1-latest.js",
+      "../../config.js",
+      "../../src/storageprovider.js"
+    ]
+  },
+  "provides": [ "storage" ],
+  "permissions": [ "core.view" ],
+  "views": {
+    "dropboxlogin": [
+      "login.html",
+      "login.js"
+    ]
+  }
+}

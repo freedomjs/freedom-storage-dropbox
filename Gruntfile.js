@@ -34,10 +34,6 @@ var FILES = {
   demo: [
     'demo/**/*.js'
   ],
-  specHelper: [
-    'config.js',
-    'spec/helper/**/*.js'
-  ],
   spec: [
     'spec/**/*.spec.js'
   ]
@@ -50,7 +46,6 @@ FILES.karma = fileInfo.unGlob([].concat(
   fileInfo.FILES.srcProviderIntegration
 ).map(addPrefix));
 FILES.karma.include = FILES.karma.include.concat(
-  FILES.specHelper, 
   FILES.spec
 );
 console.log(FILES);

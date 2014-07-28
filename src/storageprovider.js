@@ -18,12 +18,20 @@ function DropboxStorageProvider() {
   this.db.datastore = null;
   this.db.table = null;
 
-
   this.view = freedom['core.view']();
   this.view.once('message', this._onCredentials.bind(this));
-  this.view.open('dropboxlogin', { file: 'login.html' }).then(function() {
-    this.view.show();
-  }.bind(this));
+
+  if (typeof CONFIG !== 'undefined' && CONFIG.hasOwnProperty("credentials")) {
+    console.log("Preloaded credentials");
+    this._onCredentials({
+      cmd: 'auth',
+      message: CONFIG.credentials
+    });
+  } else {
+    this.view.open('dropboxlogin', { file: 'login.html' }).then(function() {
+      this.view.show();
+    }.bind(this));
+  }
 
   console.log("Dropbox Storage Provider, running in worker " + self.location.href);
 }

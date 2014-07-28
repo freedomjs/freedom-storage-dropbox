@@ -1,4 +1,7 @@
-
+/**
+ * Note: this mocked view provider is no longer used
+ *
+ **/
 var View_unprivileged = function (caller, dispatchEvent) {
   this.dispatchEvent = dispatchEvent;
   this.module = caller;
