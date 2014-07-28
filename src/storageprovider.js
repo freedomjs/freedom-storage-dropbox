@@ -38,12 +38,12 @@ function DropboxStorageProvider() {
     }.bind(this));
   }
 
-  console.log("Dropbox Storage Provider, running in worker " + self.location.href);
+  // console.log("Dropbox Storage Provider, running in worker " + self.location.href);
 }
 
 DropboxStorageProvider.prototype.keys = function(continuation) {
   //this.store.keys().then(continuation);
-  console.log("storage.dropbox.keys: enter");
+  // console.log("storage.dropbox.keys: enter");
   if (this.db.initializing) {
     this._pushQueue("keys", null, null, continuation);
     return;
@@ -61,12 +61,12 @@ DropboxStorageProvider.prototype.keys = function(continuation) {
     }
   }
   continuation(retValue);
-  console.log("storage.dropbox.keys: return=" + JSON.stringify(retValue));
+  // console.log("storage.dropbox.keys: return=" + JSON.stringify(retValue));
 };
 
 DropboxStorageProvider.prototype.get = function(key, continuation) {
   //this.store.get(key).then(continuation);
-  console.log("storage.dropbox.get: key=" + key);
+  // console.log("storage.dropbox.get: key=" + key);
   if (this.db.initializing) {
     this._pushQueue("get", key, null, continuation);
     return;
@@ -81,12 +81,12 @@ DropboxStorageProvider.prototype.get = function(key, continuation) {
     retValue = record.get("value");
   }
   continuation(retValue);
-  console.log("storage.dropbox.get: return=" + retValue);
+  // console.log("storage.dropbox.get: return=" + retValue);
 };
 
 DropboxStorageProvider.prototype.set = function(key, value, continuation) {
   //this.store.set(key, value).then(continuation);
-  console.log("storage.dropbox.set: key=" + key + ", value=" + value);
+  // console.log("storage.dropbox.set: key=" + key + ", value=" + value);
   if (this.db.initializing) {
     this._pushQueue("set", key, value, continuation);
     return;
@@ -110,12 +110,12 @@ DropboxStorageProvider.prototype.set = function(key, value, continuation) {
   }
 
   continuation(retValue);
-  console.log("storage.dropbox.set: return=" + retValue);
+  // console.log("storage.dropbox.set: return=" + retValue);
 };
 
 DropboxStorageProvider.prototype.remove = function(key, continuation) {
   //this.store.remove(key).then(continuation);
-  console.log("storage.dropbox.remove: key=" + key);
+  // console.log("storage.dropbox.remove: key=" + key);
   if (this.db.initializing) {
     this._pushQueue("remove", key, null, continuation);
     return;
@@ -135,12 +135,12 @@ DropboxStorageProvider.prototype.remove = function(key, continuation) {
   }
 
   continuation(retValue);
-  console.log("storage.dropbox.remove: return=" + retValue);
+  // console.log("storage.dropbox.remove: return=" + retValue);
 };
 
 DropboxStorageProvider.prototype.clear = function(continuation) {
   //this.store.clear().then(continuation);
-  console.log("storage.dropbox.clear: enter");
+  // console.log("storage.dropbox.clear: enter");
   if (this.db.initializing) {
     this._pushQueue("clear", null, null, continuation);
     return;
@@ -154,13 +154,13 @@ DropboxStorageProvider.prototype.clear = function(continuation) {
     records[i].deleteRecord();
   }
   continuation();
-  console.log("storage.dropbox.clear: exit");
+  // console.log("storage.dropbox.clear: exit");
 };
 
 /** INTERNAL METHODS **/
 DropboxStorageProvider.prototype._onCredentials = function(msg) {
   if (msg.cmd && msg.message && msg.cmd == 'auth') {
-    console.log("storage.dropbox._onCredentials: received credentials, opening datastore");
+    // console.log("storage.dropbox._onCredentials: received credentials, opening datastore");
     this.db.initializing = true;
     this.db.credentials = msg.message;
     this.db.client = new Dropbox.Client(this.db.credentials);
@@ -169,7 +169,7 @@ DropboxStorageProvider.prototype._onCredentials = function(msg) {
       if (error) {
         console.error(error);
       }
-      console.log("storage.dropbox._onCredentials: Fetching table");
+      // console.log("storage.dropbox._onCredentials: Fetching table");
       this.db.datastore = ds;
       this.db.table = ds.getTable(this.db.tableName);
       this.db.initializing = false;
@@ -181,7 +181,7 @@ DropboxStorageProvider.prototype._onCredentials = function(msg) {
 };
 
 DropboxStorageProvider.prototype._createError = function(code) {
-  console.log("storage.dropbox._createError: " + code);
+  // console.log("storage.dropbox._createError: " + code);
   return {
     errcode: code, 
     message: this.ERRCODE[code]
@@ -190,7 +190,7 @@ DropboxStorageProvider.prototype._createError = function(code) {
 
 //Insert call into queue
 DropboxStorageProvider.prototype._pushQueue = function(method, key, value, continuation) {
-   console.log("Pushing onto queue: " + method);
+  // console.log("Pushing onto queue: " + method);
   this.queue.push({
     cmd: method,
     key: key,

@@ -108,7 +108,7 @@ module.exports = function (grunt) {
   ]);
   grunt.registerTask('test', [
     'build',
-    'karma:phantom'
+    'karma:single'
   ]);
   grunt.registerTask('debug', [
     'build',
