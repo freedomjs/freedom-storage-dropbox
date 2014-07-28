@@ -15,3 +15,6 @@ window.addEventListener('load', function() {
 window.addEventListener('message', function(msg) {
 }, true);
 
+document.getElementById('loginbutton').addEventListener('click', function() {
+  console.log('CLICK');
+});

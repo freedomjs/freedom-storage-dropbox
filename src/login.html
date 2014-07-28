@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <script src='login.js'></script>
     <title>Dropbox Login</title>
   </head>
 
   <body>
     <header>
-      <h1>Dropbox Login</h1>
-      <p>Note: This is temporary until the provider is hooked up to use core.oauth</p>
+      <img id='loginbutton' src="dropbox.png">
     </header>
     <section>
+      <!--p>Click the logo to sign in</p-->
       <form id='loginform'>
         <label for='appkey'>App Key</label>
         <input type='text' name='appkey' placeholder='App Key'><br/>
@@ -20,5 +19,6 @@
       </form>
     </section>
   </body>
+  <script src='login.js'></script>
 
 </html>

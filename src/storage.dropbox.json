@@ -12,7 +12,8 @@
   "views": {
     "dropboxlogin": [
       "login.html",
-      "login.js"
+      "login.js",
+      "dropbox.png"
     ]
   }
 }
